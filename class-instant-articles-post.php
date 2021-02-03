@@ -294,7 +294,8 @@ class Instant_Articles_Post {
 
 		// Try to get the content from a transient, but only if the cached version have the same modtime.
 		$cache_mod_time = get_transient( 'instantarticles_mod_' . $this->_post->ID );
-		if ( get_post_modified_time( 'Y-m-d H:i:s', true, $this->_post->ID ) === $cache_mod_time ) {
+		if ( apply_filters( 'instant_articles_cache_content', true, $this->_post->ID )
+			&& get_post_modified_time( 'Y-m-d H:i:s', true, $this->_post->ID ) === $cache_mod_time ) {
 			$content = get_transient( 'instantarticles_content_' . $this->_post->ID );
 			if ( false !== $content && strlen( $content ) ) {
 				return $content;
@@ -681,19 +682,6 @@ class Instant_Articles_Post {
 
 		$this->set_appearance_from_settings();
 
-		// This block sets as default likes and/or comments based on the configuration setup,
-		// and call $transformer->transform will consider the defaults before building the Elements
-		//
-		// Warning: if you are using pthreads or any other multithreaded engine, consider replicating this to all processes.
-		if ( isset( $settings_publishing[ 'likes_on_media' ] ) ) {
-			Image::setDefaultLikeEnabled( $settings_publishing[ 'likes_on_media' ] );
-			Video::setDefaultLikeEnabled( $settings_publishing[ 'likes_on_media' ] );
-		}
-		if ( isset( $settings_publishing[ 'comments_on_media' ] ) ) {
-			Image::setDefaultCommentEnabled( $settings_publishing[ 'comments_on_media' ] );
-			Video::setDefaultCommentEnabled( $settings_publishing[ 'comments_on_media' ] );
-		}
-
 		$the_content = $this->get_the_content();
 		if (!Type::isTextEmpty($the_content)) {
 			$transformer->transformString( $this->instant_article, $the_content, get_option( 'blog_charset' ) );
@@ -985,11 +973,22 @@ class Instant_Articles_Post {
 	public function set_appearance_from_settings() {
 		$settings = Instant_Articles_Option_Styles::get_option_decoded();
 
+		$article_style = 'default';
+
 		if ( isset( $settings['article_style'] ) && ! empty( $settings['article_style'] ) ) {
-			$this->instant_article->withStyle( $settings['article_style'] );
-		} else {
-			$this->instant_article->withStyle( 'default' );
+			$article_style = $settings['article_style'];
 		}
+
+		/**
+		 * Filter the article style to use.
+		 *
+		 * @since 0.1
+		 * @param string                    $template               Path to the current (default) template.
+		 * @param Instant_Article_Post      $instant_article_post   The instant article post.
+		 */
+		$article_style = apply_filters( 'instant_articles_style', $article_style, $this );
+
+		$this->instant_article->withStyle($article_style);
 
 		if ( isset( $settings['copyright'] ) && ! empty( $settings['copyright'] ) ) {
 			$footer = Footer::create();
@@ -1003,25 +1002,5 @@ class Instant_Articles_Post {
 		if ( isset( $settings['rtl_enabled'] ) ) {
 			$this->instant_article->enableRTL();
 		}
-	}
-
-	/**
-	 * Article <head> style.
-	 *
-	 * @since 0.1
-	 * @return string The article style.
-	 */
-	public function get_article_style() {
-
-		/**
-		 * Filter the article style to use.
-		 *
-		 * @since 0.1
-		 * @param string                    $template               Path to the current (default) template.
-		 * @param Instant_Article_Post      $instant_article_post   The instant article post.
-		 */
-		$article_style = apply_filters( 'instant_articles_style', 'default', $this );
-
-		return $article_style;
 	}
 }

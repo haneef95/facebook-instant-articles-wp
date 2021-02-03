@@ -28,6 +28,13 @@ if ( ( defined( 'GAWP_VERSION' ) || function_exists( 'MonsterInsights' ) ) && ! 
 	$gawp->init();
 }
 
+// Load support for Google Tag Manager for WordPress by Duracelltomi.
+if ( defined( 'GTM4WP_VERSION' ) ) {
+  include( dirname( __FILE__ ) . '/compat/class-instant-articles-gtm4wp.php' );
+  $gtm4wp = new Instant_Articles_Google_Tag_Manager_For_WordPress;
+  $gtm4wp->init();
+}
+
 // Load support for Jetpack
 if ( defined( 'JETPACK__VERSION' ) ) {
 	include( dirname( __FILE__ ) . '/compat/class-instant-articles-jetpack.php' );
@@ -51,3 +58,8 @@ $playbuzz->init();
 include( dirname( __FILE__ ) . '/compat/class-instant-articles-apester.php' );
 $apester = new Instant_Articles_Apester;
 $apester->init();
+
+// Load support for Comscore
+include( dirname( __FILE__ ) . '/compat/class-instant-articles-comscore.php' );
+$comscore = new Instant_Articles_Comscore;
+$comscore->init();

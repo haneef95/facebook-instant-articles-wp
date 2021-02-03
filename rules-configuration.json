@@ -24,6 +24,9 @@
         "class": "PassThroughRule",
         "selector" : "span"
     }, {
+      "class": "PassThroughRule",
+      "selector": "g"
+    }, {
         "class": "ParagraphRule",
         "selector": "p"
     }, {
@@ -129,6 +132,23 @@
     }, {
         "class": "InteractiveRule",
         "selector" : "blockquote.instagram-media",
+        "properties" : {
+            "interactive.iframe" : {
+                "type" : "multiple",
+                "children": [
+                    {
+                        "type": "element",
+                        "selector": "blockquote"
+                    }, {
+                        "type": "next-sibling-element-of",
+                        "selector": "blockquote"
+                    }
+                ]
+            }
+        }
+    }, {
+        "class": "InteractiveRule",
+        "selector" : "blockquote.twitter-tweet",
         "properties" : {
             "interactive.iframe" : {
                 "type" : "multiple",
@@ -310,6 +330,15 @@
             }
         }
     }, {
+        "class": "SlideshowRule",
+        "selector" : "figure.wp-block-gallery"
+    }, {
+        "class": "PassThroughRule",
+        "selector" : "ul.blocks-gallery-grid"
+    }, {
+        "class": "PassThroughRule",
+        "selector" : "li.blocks-gallery-item"
+    }, {
         "class": "VideoRule",
         "selector" : "div.wp-video",
         "containsChild": "video",
@@ -331,6 +360,9 @@
     }, {
         "class" : "PassThroughRule",
         "selector" : "div.vce-gallery-small"
+    }, {
+        "class": "PassthroughRule",
+        "selector": "div.wp-block-columns, div.wp-block-column"
     }, {
         "class" : "IgnoreRule",
         "selector" : "div.vce-gallery-slider"
